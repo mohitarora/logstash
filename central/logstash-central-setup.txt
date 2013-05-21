@@ -17,11 +17,12 @@ $ mkdir /var/log/logstash
 # Create a file for logstash configuration
 $ touch /etc/logstash/central.conf
 
-# Add following configuration to /etc/logstash/central.conf
+# Add following configuration to /etc/logstash/central.conf  (Following setup assume elastic search is running on the
+# same instance where logstash central server is running)
 
 input {
 	redis {
-		host => "127.0.0.1"
+		host => "<REDIS_HOST>"
 		type => "redis-input"
 		data_type => "list"
 		key => "logstash"
@@ -39,12 +40,12 @@ output {
       tags => "error"
       exclude_tags => ["_grokparsefailure"]
       increment => "%{@type}.%{file}.%{method}.%{line}.errors.count"
-      host => "10.101.43.151"
+      host => "<STATSD_HOST>"
    }
    statsd {
       tags => "error"
       increment => "%{@type}.errors.count"
-      host => "10.101.43.151"
+      host => "<STATSD_HOST>"
    }
 
 }

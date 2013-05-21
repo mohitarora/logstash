@@ -64,7 +64,7 @@ output {
 		debug => true
 	}
 	redis {
-		host => "10.39.98.190"
+		host => "<REDIS_HOST>"
 		data_type => "list"
 		key => "logstash"
 	}
