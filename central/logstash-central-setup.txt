@@ -33,19 +33,19 @@ output {
 		debug => true
 	}
 	elasticsearch {
-		cluster => "logstash"
+	   cluster => "logstash"
 	}
-    statsd {
-        tags => "error"
-        exclude_tags => ["_grokparsefailure"]
-        increment => "%{@type}.%{file}.%{method}.%{line}.errors.count"
-        host => "10.101.43.151"
-    }
-    statsd {
-        tags => "error"
-        increment => "%{@type}.errors.count"
-        host => "10.101.43.151"
-    }
+   statsd {
+      tags => "error"
+      exclude_tags => ["_grokparsefailure"]
+      increment => "%{@type}.%{file}.%{method}.%{line}.errors.count"
+      host => "10.101.43.151"
+   }
+   statsd {
+      tags => "error"
+      increment => "%{@type}.errors.count"
+      host => "10.101.43.151"
+   }
 
 }
 

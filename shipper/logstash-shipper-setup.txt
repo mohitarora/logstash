@@ -28,35 +28,35 @@ input {
 }
 filter {
     grep {
-        type => "bscollege"
-        match => [ "@message", "(.+)" ]
-        add_tag => [ "grepped" ]
+      type => "bscollege"
+      match => [ "@message", "(.+)" ]
+      add_tag => [ "grepped" ]
     }
     date {
-        type => "bscollege"
-        timestamp => "ISO8601"
-        add_tag => [ "dated" ]
+      type => "bscollege"
+      timestamp => "ISO8601"
+      add_tag => [ "dated" ]
     }
     grep {
-        type => "bscollege"
-        drop => false
-        add_tag => "%{@source_host}"
+      type => "bscollege"
+      drop => false
+      add_tag => "%{@source_host}"
     }
     grep {
-        type => "bscollege"
-        match => [ "@message", "^\[ERROR\]" ]
-        drop => false
-        add_tag => [ "error" ]
+      type => "bscollege"
+      match => [ "@message", "^\[ERROR\]" ]
+      drop => false
+      add_tag => [ "error" ]
     }
     multiline {
-        type => "bscollege"
-        pattern => "^(?!\[ERROR\]|\[INFO\]|\[FATAL\]|\[WARN\]|\[DEBUG\])"
-        what => "previous"
+      type => "bscollege"
+      pattern => "^(?!\[ERROR\]|\[INFO\]|\[FATAL\]|\[WARN\]|\[DEBUG\])"
+      what => "previous"
     }
     grok {
-        type => "bscollege"
-        tags => "error"
-        pattern => "%{JAVASTACKTRACEPART}"
+      type => "bscollege"
+      tags => "error"
+      pattern => "%{JAVASTACKTRACEPART}"
     }
 }
 output {
