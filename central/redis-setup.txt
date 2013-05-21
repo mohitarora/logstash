@@ -1,0 +1,13 @@
+# Install Redis
+$ yum install redis -y
+
+# Change Redis Configuration so that it can listen to all the hosts
+$ vi /etc/redis.conf and comment out this line: bind 127.0.0.1
+
+# Start Redis
+$ /etc/init.d/redis start
+
+# Test if redis is configured successfully
+$ redis-cli
+$ PING
+PONG
