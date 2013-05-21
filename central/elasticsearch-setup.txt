@@ -27,3 +27,58 @@ $ /etc/init.d/elasticsearch start
 # Verify setup
 # Hit http://<ElasticSearch_Host>:9200
 # http://<ElasticSearch_Host>:9200/_status?pretty=true
+
+# Add template for elastic search
+curl -XPUT http://<ElasticSearch_Host>:9200/_template/logstash_per_index -d '{
+    "template": "logstash*",
+    "settings": {
+        "index.query.default_field": "@message",
+        "index.cache.field.type": "soft",
+        "index.store.compress.stored": true
+    },
+    "mappings": {
+        "_default_": {
+            "_all": {
+                "enabled": false
+            },
+            "properties": {
+                "@message": {
+                    "type": "string",
+                    "index": "analyzed"
+                },
+                "@source": {
+                    "type": "string",
+                    "index": "not_analyzed"
+                },
+                "@source_host": {
+                    "type": "string",
+                    "index": "not_analyzed"
+                },
+                "@source_path": {
+                    "type": "string",
+                    "index": "not_analyzed"
+                },
+                "@tags": {
+                    "type": "string",
+                    "index": "not_analyzed"
+                },
+                "@timestamp": {
+                    "type": "date",
+                    "index": "not_analyzed"
+                },
+                "@type": {
+                    "type": "string",
+                    "index": "not_analyzed"
+                },
+                "@fields": {
+                    "type": "object",
+                    "dynamic": true,
+                    "path": "full"
+                }
+            }
+        }
+    }
+}'
+
+# How to check if template is added. This will only show meaningful data once indexing starts
+http://<ElasticSearch_Host>:9200/_all/_mapping?pretty=true
