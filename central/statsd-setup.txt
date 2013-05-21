@@ -1,0 +1,33 @@
+# Please make sure graphite is installed before you install statsd, Graphite installation instructions are available
+# at graphite-setup.txt. This setup assumes that statsd and graphite are running on same host
+
+# Install node.js
+$ mkdir -p /opt/nodejs
+$ curl http://nodejs.org/dist/v0.10.5/node-v0.10.5-linux-x64.tar.gz | tar xzvf - --strip-components=1 -C /opt/nodejs
+
+# Symlinks
+$ ln -sf /opt/nodejs/bin/node /usr/local/bin/node
+$ ln -sf /opt/nodejs/bin/npm /usr/local/bin/npm
+
+# Install statsd
+
+$ cd /tmp
+$ git clone http://github.com/etsy/statsd.git
+$ cp -R /tmp/statsd /opt/graphite
+
+# Configure statsd
+$ touch /opt/graphite/statsd/local.js
+
+$ Add following contents to opt/graphite/statsd/local.js
+{
+  graphitePort: 2003
+, graphiteHost: "localhost"
+, port: 8125
+, debug: true
+}
+
+# Start nodejs/statsd
+
+$ cd /opt/graphite/statsd
+$ node stats.js local.js &
+

@@ -1,0 +1,77 @@
+# Check Python Version by running following command, Python 2.6+ is recommended. If python is not installed install
+# latest version.
+
+$ python -c "import sys; print(sys.version)"
+
+# Install Python pip and setup tools.
+$ yum -y install python-devel python-setuptools python-pip
+
+# Install Graphite related packages
+
+$ yum -y install pycairo  ## Pycairo is a set of Python bindings for the cairo graphics library
+$ yum -y install Django   ## Django is a high-level Python Web framework that graphite web-app is using
+$ pip-python install django-tagging  ##Tagging application for Django projects, it allows association of tags with any Model instance and makes retrieval of tags simple.
+$ yum -y install python-memcached
+$ yum -y install memcached
+$ yum -y install fontconfig bitmap bitmap-fonts ## Font Config and related packages
+
+# Install Graphite
+
+$ pip-python install whisper
+$ pip-python install carbon
+$ pip-python install graphite-web
+
+# Install HTTPD server for web app
+
+$ yum -y install httpd mod_python mod_wsgi
+
+# Setup Graphite
+
+$ cd /opt/graphite/conf
+$ cp carbon.conf.example carbon.conf
+$ cp storage-schemas.conf.example storage-schemas.conf
+
+# Add following content in storage-schemas.conf for stats
+[stats]
+pattern = ^stats.*
+retentions = 10s:6h,1min:7d,10min:5y
+
+$ cp storage-aggregation.conf.example storage-aggregation.conf
+$ cp graphite.wsgi.example graphite.wsgi
+
+$ cd /opt/graphite/webapp/graphite
+$ cp local_settings.py.example local_settings.py
+
+# Change following properties in local settings
+TIME_ZONE = 'US/Eastern'
+MEMCACHE_HOSTS = ['127.0.0.1:11211']
+
+# create database for webapp
+$ python /opt/graphite/webapp/graphite/manage.py syncdb
+
+# Apache needs to access storage files so they should be owned by apache
+$ chown -R apache:apache /opt/graphite/storage/
+
+$ HTTPD VHost Configuration
+
+$ cd /etc/httpd/conf.d
+$ cp /opt/graphite/examples/example-graphite-vhost.conf graphite-vhost.conf
+
+
+# Start Carbon
+$ /usr/bin/python /opt/graphite/bin/carbon-cache.py start
+
+# Start memcached
+$ /etc/init.d/memcached start
+
+# Start apache
+$ /etc/init.d/httpd restart
+
+# How to test
+Hit http://<GRAPHITE_HOST>
+
+
+
+
+
+
