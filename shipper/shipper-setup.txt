@@ -1,0 +1,74 @@
+# Install Java
+$ yum install java-1.7.0-openjdk -y
+
+# Create a directory to install logstash
+$ mkdir /opt/logstash
+
+# Install logstash
+$ cd /opt/logstash
+$ wget https://logstash.objects.dreamhost.com/release/logstash-1.1.10-monolithic.jar -O logstash.jar
+
+# Create a directory for logstash configuration
+$ mkdir /etc/logstash
+
+# Create a directory for logstash logs
+$ mkdir /var/log/logstash
+
+# Create a file for logstash configuration
+$ touch /etc/logstash/shipper.conf
+
+# Add following configuration to /etc/logstash/shipper.conf
+
+input {
+	file {
+		type => "bscollege"
+		path => ["/var/log/app.log"]
+		debug => true
+	}
+}
+filter {
+    grep {
+        type => "bscollege"
+        match => [ "@message", "(.+)" ]
+        add_tag => [ "grepped" ]
+    }
+    date {
+        type => "bscollege"
+        timestamp => "ISO8601"
+        add_tag => [ "dated" ]
+    }
+    grep {
+        type => "bscollege"
+        drop => false
+        add_tag => "%{@source_host}"
+    }
+    grep {
+        type => "bscollege"
+        match => [ "@message", "^\[ERROR\]" ]
+        drop => false
+        add_tag => [ "error" ]
+    }
+    multiline {
+        type => "bscollege"
+        pattern => "^(?!\[ERROR\]|\[INFO\]|\[FATAL\]|\[WARN\]|\[DEBUG\])"
+        what => "previous"
+    }
+    grok {
+        type => "bscollege"
+        tags => "error"
+        pattern => "%{JAVASTACKTRACEPART}"
+    }
+}
+output {
+	stdout {
+		debug => true
+	}
+	redis {
+		host => "10.39.98.190"
+		data_type => "list"
+		key => "logstash"
+	}
+}
+
+# Running logstash
+java -jar /opt/logstash/logstash.jar agent -v -f /etc/logstash/shipper.conf --log /var/log/logstash/shipper.log &
