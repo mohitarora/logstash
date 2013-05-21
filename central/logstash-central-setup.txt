@@ -1,0 +1,53 @@
+# Install Java
+$ yum install java-1.7.0-openjdk -y
+
+# Create a directory to install logstash
+$ mkdir /opt/logstash
+
+# Install logstash
+$ cd /opt/logstash
+$ wget https://logstash.objects.dreamhost.com/release/logstash-1.1.10-monolithic.jar -O logstash.jar
+
+# Create a directory for logstash configuration
+$ mkdir /etc/logstash
+
+# Create a directory for logstash logs
+$ mkdir /var/log/logstash
+
+# Create a file for logstash configuration
+$ touch /etc/logstash/central.conf
+
+# Add following configuration to /etc/logstash/central.conf
+
+input {
+	redis {
+		host => "127.0.0.1"
+		type => "redis-input"
+		data_type => "list"
+		key => "logstash"
+		message_format => "json_event"
+	}
+}
+output {
+	stdout {
+		debug => true
+	}
+	elasticsearch {
+		cluster => "logstash"
+	}
+    statsd {
+        tags => "error"
+        exclude_tags => ["_grokparsefailure"]
+        increment => "%{@type}.%{file}.%{method}.%{line}.errors.count"
+        host => "10.101.43.151"
+    }
+    statsd {
+        tags => "error"
+        increment => "%{@type}.errors.count"
+        host => "10.101.43.151"
+    }
+
+}
+
+# Running logstash
+java -jar /opt/logstash/logstash.jar agent -v -f /etc/logstash/central.conf --log /var/log/logstash/central.log &
