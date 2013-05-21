@@ -1,0 +1,23 @@
+# Installing Kibana (This setup assumes that Kibana and Elastic search are running on same instance)
+
+$ cd /opt
+$ git clone git://github.com/rashidkpc/Kibana.git
+$ cd Kibana
+$ gem build kibana.gemspec
+$ gem install --no-rdoc --no-ri kibana-0.2.0.gem
+
+# Setup Kibana to listen to all hosts
+$ cd /usr/share/gems/gems/kibana-0.2.0
+
+# vi KibanaConfig.rb and change following propeties
+
+KibanaHost = '127.0.0.1' (Change to 0.0.0.0)
+Primary_field = '@message'
+Timezone = 'US/Eastern'
+
+# Start Kibana
+$ cd /usr/share/gems/gems/kibana-0.2.0
+$ bin/kibana &
+
+# How to test
+hit http://<Kibana_Host>:5601
