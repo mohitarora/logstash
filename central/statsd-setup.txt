@@ -29,5 +29,5 @@ $ Add following contents to opt/graphite/statsd/local.js
 # Start nodejs/statsd
 
 $ cd /opt/graphite/statsd
-$ node stats.js local.js &
+$ /usr/local/bin/node stats.js local.js 2>&1 >> /var/log/statsd.log
 
